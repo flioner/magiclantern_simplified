@@ -2,6 +2,7 @@
  * Minimal ML - for debugging
  */
 
+#include <stdio.h>
 #include "dryos.h"
 #include "vram.h"
 #include "bmp.h"
@@ -26,9 +27,24 @@ static void run_test()
 }
 #endif
 
+static uint32_t compute_signature(uint32_t start, uint32_t num)
+{
+    uint32_t c = 0;
+    for (uint32_t p = start; p < start + num; p++)
+    {
+        c += p;
+    }
+    return c;
+}
+
 static void hello_world()
 {
     /* wait for display to initialize */
+
+    char str[15];
+    int sig = compute_signature(0xe0040000, 0x10000);
+    snprintf(str, "%i", sig);
+
     while (!bmp_vram_raw())
     {
         msleep(100);
@@ -42,6 +58,7 @@ static void hello_world()
         msleep(500);
         
         font_draw(100, 75, COLOR_WHITE, 3, "Hello, World!");
+	font_draw(100, 400, COLOR_WHITE, 3, str);
     }
 }
 
